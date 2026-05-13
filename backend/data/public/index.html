@@ -58,58 +58,37 @@ function renderError(msg) {
 }
 
 async function loadTokens() {
-  container.innerHTML = '<div class="status">Acordando servidor Render...<br>Aguarda 50s se for o primeiro acesso do dia 😴</div>';
+  container.innerHTML = '<div class="status">Acordando servidor Render...<br>Aguarda 50s se for o primeiro acesso 😴</div>';
   
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+  const timeout = setTimeout(() => controller.abort(), 60000);
 
   try {
     const res = await fetch(`${API}/api/coins`, { signal: controller.signal });
     clearTimeout(timeout);
-    
-    if (!res.ok) throw new Error(`API retornou ${res.status}`);
-    
+    if (!res.ok) throw new Error(`API ${res.status}`);
     const data = await res.json();
     const coins = data.coins || [];
-
-    if (!coins.length) {
-      renderError('API online mas não voltou tokens.<br>DexScreener pode estar fora.');
-      return;
-    }
-
+    if (!coins.length) return renderError('API online mas sem tokens.');
+    
     container.innerHTML = coins.map(t => {
       const change = parseFloat(t.change24h || 0);
       const changeClass = change >= 0 ? 'green' : 'red';
       const price = parseFloat(t.priceUsd || 0);
       const priceFmt = price < 0.01 ? price.toFixed(8) : price.toFixed(6);
       const mc = t.marketCap ? `$${(t.marketCap/1e6).toFixed(1)}M` : 'N/A';
-      
       return `
         <div class="card" onclick="window.open('https://dexscreener.com/solana/${t.pairAddress}','_blank')">
           <img src="${t.imageUrl || ''}" onerror="this.style.display='none'">
-          <div class="info">
-            <h3>${t.name}</h3>
-            <p>${t.symbol} • MC: ${mc}</p>
-          </div>
-          <div class="price">
-            <div class="usd">$${priceFmt}</div>
-            <div class="change ${changeClass}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div>
-          </div>
-        </div>
-      `;
+          <div class="info"><h3>${t.name}</h3><p>${t.symbol} • MC: ${mc}</p></div>
+          <div class="price"><div class="usd">$${priceFmt}</div><div class="change ${changeClass}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div></div>
+        </div>`;
     }).join('');
-
   } catch (err) {
     clearTimeout(timeout);
-    console.error('Erro fetch:', err);
-    if (err.name === 'AbortError') {
-      renderError('Timeout: Servidor demorou >60s.<br>Render free tá dormindo pesado.');
-    } else {
-      renderError(`Erro: ${err.message}<br>Verifica o console F12.`);
-    }
+    renderError(err.name === 'AbortError' ? 'Timeout: Servidor dormindo.' : `Erro: ${err.message}`);
   }
 }
-
 loadTokens();
 </script>
 </body>
