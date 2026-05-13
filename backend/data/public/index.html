@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coinhat DEX - Top Solana</title>
+  <title>Coinhat DEX</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { 
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui; 
       background: #0a0a0a; color: #fff; padding: 16px; 
     }
-    h1 { margin-bottom: 20px; font-size: 24px; }
+    h1 { margin-bottom: 20px; font-size: 22px; }
     .grid { 
       display: grid; 
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
@@ -21,7 +21,7 @@
       padding: 16px; display: flex; gap: 12px; align-items: center;
       cursor: pointer; transition: all .2s;
     }
-    .card:hover { background: #1f1f1f; border-color: #444; transform: translateY(-2px); }
+    .card:hover { background: #1f1f1f; border-color: #444; }
     .card img { width: 44px; height: 44px; border-radius: 50%; background: #222; }
     .info { flex: 1; min-width: 0; }
     .info h3 { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -30,36 +30,50 @@
     .price .usd { font-weight: 600; font-size: 16px; }
     .price .change { font-size: 13px; font-weight: 500; }
     .green { color: #16c784; } .red { color: #ea3943; }
-    .loading, .error { 
+    .status { 
       grid-column: 1/-1; text-align: center; padding: 60px 20px; 
-      color: #666; font-size: 14px;
+      color: #666; font-size: 14px; line-height: 1.6;
     }
-    .actions { display: flex; gap: 8px; margin-top: 8px; }
-    .btn { 
-      font-size: 12px; padding: 6px 10px; border-radius: 8px; 
-      background: #2a2a2a; color: #aaa; text-decoration: none;
-      border: 1px solid #333;
+    .btn-retry {
+      margin-top: 12px; padding: 10px 16px; background: #16c784; 
+      color: #000; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;
     }
-    .btn:hover { background: #333; color: #fff; }
   </style>
 </head>
 <body>
   <h1>🔥 Trending Solana</h1>
-  <div id="tokens" class="grid">
-    <div class="loading">Buscando tokens na blockchain...</div>
-  </div>
+  <div id="tokens" class="grid"></div>
 
 <script>
 const API = 'https://coinhat.onrender.com';
+const container = document.getElementById('tokens');
+
+function renderError(msg) {
+  container.innerHTML = `
+    <div class="status">
+      ${msg}
+      <br><button class="btn-retry" onclick="loadTokens()">Tentar de novo</button>
+    </div>
+  `;
+}
 
 async function loadTokens() {
-  const container = document.getElementById('tokens');
+  container.innerHTML = '<div class="status">Acordando servidor Render...<br>Aguarda 50s se for o primeiro acesso do dia 😴</div>';
+  
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
   try {
-    const res = await fetch(`${API}/api/coins`);
-    const { coins } = await res.json();
+    const res = await fetch(`${API}/api/coins`, { signal: controller.signal });
+    clearTimeout(timeout);
     
-    if (!coins?.length) {
-      container.innerHTML = '<div class="error">Nenhum token encontrado. Volta em 1 min.</div>';
+    if (!res.ok) throw new Error(`API retornou ${res.status}`);
+    
+    const data = await res.json();
+    const coins = data.coins || [];
+
+    if (!coins.length) {
+      renderError('API online mas não voltou tokens.<br>DexScreener pode estar fora.');
       return;
     }
 
@@ -68,17 +82,14 @@ async function loadTokens() {
       const changeClass = change >= 0 ? 'green' : 'red';
       const price = parseFloat(t.priceUsd || 0);
       const priceFmt = price < 0.01 ? price.toFixed(8) : price.toFixed(6);
+      const mc = t.marketCap ? `$${(t.marketCap/1e6).toFixed(1)}M` : 'N/A';
       
       return `
-        <div class="card" onclick="openChart('${t.pairAddress}')">
+        <div class="card" onclick="window.open('https://dexscreener.com/solana/${t.pairAddress}','_blank')">
           <img src="${t.imageUrl || ''}" onerror="this.style.display='none'">
           <div class="info">
             <h3>${t.name}</h3>
-            <p>${t.symbol} • MC: $${(t.marketCap/1e6).toFixed(1)}M</p>
-            <div class="actions">
-              <a href="#" class="btn" onclick="openSwap('${t.address}');event.stopPropagation()">Swap</a>
-              <a href="https://dexscreener.com/solana/${t.pairAddress}" target="_blank" class="btn" onclick="event.stopPropagation()">Chart</a>
-            </div>
+            <p>${t.symbol} • MC: ${mc}</p>
           </div>
           <div class="price">
             <div class="usd">$${priceFmt}</div>
@@ -89,21 +100,17 @@ async function loadTokens() {
     }).join('');
 
   } catch (err) {
-    container.innerHTML = '<div class="error">API offline. Render tá dormindo? 😴</div>';
-    console.error(err);
+    clearTimeout(timeout);
+    console.error('Erro fetch:', err);
+    if (err.name === 'AbortError') {
+      renderError('Timeout: Servidor demorou >60s.<br>Render free tá dormindo pesado.');
+    } else {
+      renderError(`Erro: ${err.message}<br>Verifica o console F12.`);
+    }
   }
 }
 
-function openChart(pairAddress) {
-  window.open(`https://dexscreener.com/solana/${pairAddress}`, '_blank');
-}
-
-function openSwap(tokenAddress) {
-  window.open(`https://jup.ag/swap/SOL-${tokenAddress}`, '_blank');
-}
-
 loadTokens();
-setInterval(loadTokens, 60000); // Atualiza a cada 1 min
 </script>
 </body>
 </html>
