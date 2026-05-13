@@ -1,547 +1,400 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Coinhat DEX</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Coinhat DEX</title>
 
-<style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+  <link rel="icon" href="/assets/logo.jpg" />
 
-:root{
-  --bg:#0a0a0a;
-  --card:#151515;
-  --line:#262626;
-  --text:#fff;
-  --muted:#8b8b8b;
-  --blue:#1a6bff;
-  --green:#16c784;
-  --red:#ea3943;
-}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  overflow-x:hidden;
-}
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
 
-/* HEADER */
-
-.topbar{
-  height:64px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 16px;
-  border-bottom:1px solid var(--line);
-  position:sticky;
-  top:0;
-  background:#0a0a0af2;
-  backdrop-filter:blur(12px);
-  z-index:50;
-}
-
-.logo{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:20px;
-  font-weight:700;
-}
-
-.logo-icon{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#1a6bff,#00d4ff);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-}
-
-.icon-btn{
-  width:42px;
-  height:42px;
-  border:none;
-  background:#1b1b1b;
-  border-radius:12px;
-  color:#fff;
-  font-size:18px;
-  cursor:pointer;
-}
-
-/* TICKER */
-
-.ticker{
-  border-bottom:1px solid var(--line);
-  overflow:hidden;
-  white-space:nowrap;
-}
-
-#ticker-track{
-  display:inline-flex;
-  gap:28px;
-  padding:12px 18px;
-  animation:ticker 24s linear infinite;
-}
-
-@keyframes ticker{
-  from{transform:translateX(0)}
-  to{transform:translateX(-50%)}
-}
-
-.t-item{
-  display:flex;
-  gap:8px;
-  font-size:14px;
-}
-
-.up{color:var(--green)}
-.dn{color:var(--red)}
-
-/* CONTENT */
-
-.main{
-  padding:16px;
-}
-
-.section-title{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:18px;
-}
-
-.section-title h2{
-  font-size:22px;
-}
-
-.refresh-btn{
-  border:none;
-  background:var(--blue);
-  color:#fff;
-  padding:10px 14px;
-  border-radius:12px;
-  cursor:pointer;
-  font-weight:600;
-}
-
-/* GRID */
-
-.coin-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
-  gap:14px;
-}
-
-.coin-card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:16px;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.coin-card:hover{
-  transform:translateY(-3px);
-  border-color:#3a3a3a;
-}
-
-.card-top{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:14px;
-}
-
-.card-logo{
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  object-fit:cover;
-}
-
-.card-logo-fb{
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-  font-size:18px;
-  background:#1a6bff;
-}
-
-.card-chg-badge{
-  height:30px;
-  padding:0 12px;
-  border-radius:999px;
-  display:flex;
-  align-items:center;
-  font-size:13px;
-  font-weight:700;
-}
-
-.card-chg-badge.up{
-  background:#16c78422;
-}
-
-.card-chg-badge.dn{
-  background:#ea394322;
-}
-
-.c-name{
-  font-size:18px;
-  font-weight:700;
-}
-
-.c-sym{
-  color:var(--muted);
-  margin-top:4px;
-}
-
-.c-price{
-  margin-top:14px;
-  font-size:28px;
-  font-weight:800;
-}
-
-.card-stats{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-top:18px;
-}
-
-.cs-item{
-  background:#101010;
-  border:1px solid #222;
-  border-radius:14px;
-  padding:12px;
-}
-
-.cs-lbl{
-  color:var(--muted);
-  font-size:12px;
-}
-
-.cs-val{
-  margin-top:6px;
-  font-weight:700;
-}
-
-/* SKELETON */
-
-.skel{
-  height:220px;
-  border-radius:20px;
-  background:linear-gradient(
-    90deg,
-    #111 0%,
-    #1a1a1a 50%,
-    #111 100%
-  );
-  background-size:200% 100%;
-  animation:skel 1.2s infinite;
-}
-
-@keyframes skel{
-  0%{background-position:200% 0}
-  100%{background-position:-200% 0}
-}
-
-/* TOAST */
-
-#toasts{
-  position:fixed;
-  top:16px;
-  right:16px;
-  z-index:999;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.toast{
-  background:#1d1d1d;
-  border:1px solid #333;
-  padding:14px 18px;
-  border-radius:14px;
-  min-width:220px;
-}
-
-/* MODAL */
-
-.modal{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:none;
-}
-
-.modal.open{
-  display:block;
-}
-
-.modal-bg{
-  position:absolute;
-  inset:0;
-  background:#0009;
-  backdrop-filter:blur(8px);
-}
-
-.modal-box{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:min(95vw,900px);
-  background:#111;
-  border:1px solid #2a2a2a;
-  border-radius:24px;
-  overflow:hidden;
-}
-
-.modal-head{
-  height:64px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 18px;
-  border-bottom:1px solid #222;
-}
-
-.modal-content{
-  padding:20px;
-}
-
-.close-btn{
-  border:none;
-  background:#1d1d1d;
-  color:#fff;
-  width:38px;
-  height:38px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-#m-chart{
-  width:100%;
-  height:420px;
-  border:none;
-  border-radius:18px;
-  margin-top:20px;
-  background:#0d0d0d;
-}
-
-/* SWAP */
-
-#jupiter-iframe{
-  width:100%;
-  height:720px;
-  border:none;
-  background:#0f0f0f;
-}
-
-/* MOBILE */
-
-@media(max-width:768px){
-
-  .coin-grid{
-    grid-template-columns:1fr;
-  }
-
-  .c-price{
-    font-size:24px;
-  }
-
-}
-</style>
+  <link rel="stylesheet" href="/style.css" />
 </head>
-
 <body>
 
-<!-- TOASTS -->
-<div id="toasts"></div>
+  <!-- TOASTS -->
+  <div id="toasts"></div>
 
-<!-- HEADER -->
-<header class="topbar">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="h-inner">
 
-  <div class="logo">
-    <div class="logo-icon">C</div>
-    <span>Coinhat DEX</span>
-  </div>
+      <div class="h-left">
+        <button class="menu-btn" id="menu-btn">
+          ☰
+        </button>
 
-  <button id="refresh-btn" class="icon-btn">
-    ↻
-  </button>
+        <div class="brand">
+          <img src="/assets/logo.jpg" class="brand-logo" alt="Coinhat" />
+          <div class="brand-name">Coinhat</div>
+        </div>
+      </div>
 
-</header>
+      <div class="h-right">
+        <div class="search-wrap" id="search-wrap">
 
-<!-- TICKER -->
-<div class="ticker">
-  <div id="ticker-track"></div>
-</div>
+          <svg class="search-field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
 
-<!-- MAIN -->
-<main class="main">
+          <input
+            type="text"
+            class="search-field"
+            id="search-field"
+            placeholder="Search token"
+            autocomplete="off"
+          />
 
-  <div class="section-title">
-    <h2>🔥 Trending Solana</h2>
-  </div>
+          <button class="search-btn-icon" id="search-toggle">
+            🔍
+          </button>
 
-  <div id="coin-grid" class="coin-grid"></div>
+          <div class="search-drop" id="search-drop"></div>
+        </div>
+      </div>
 
-</main>
-
-<!-- TOKEN MODAL -->
-<div id="token-modal" class="modal">
-
-  <div id="modal-bg" class="modal-bg"></div>
-
-  <div class="modal-box">
-
-    <div class="modal-head">
-      <h3>Token Details</h3>
-
-      <button id="modal-close" class="close-btn">
-        ✕
-      </button>
     </div>
 
-    <div class="modal-content">
+    <!-- TICKER -->
+    <div class="ticker-wrap">
+      <div class="ticker-track" id="ticker-track"></div>
+    </div>
+  </header>
 
-      <div style="display:flex;align-items:center;gap:14px">
+  <!-- APP -->
+  <div id="app">
 
-        <img
-          id="m-logo"
-          class="card-logo"
-          style="display:none"
-        >
+    <main class="main">
 
-        <div
-          id="m-logo-fb"
-          class="card-logo-fb"
-        >
-          ?
+      <!-- HOME -->
+      <section class="section active" id="sec-home">
+
+        <div class="sec-head">
+          <div>
+            <h2 class="sec-title">Trending Tokens</h2>
+          </div>
+
+          <div class="sec-actions">
+            <div class="live-dot">
+              <span class="pulse"></span>
+              LIVE
+            </div>
+
+            <button class="pill-btn" id="refresh-btn">
+              Refresh
+            </button>
+          </div>
         </div>
 
-        <div>
-          <h2 id="m-name">—</h2>
-          <div id="m-sym" style="color:#888"></div>
+        <!-- FILTERS -->
+        <div class="filter-tabs">
+          <button class="ftab active" data-filter="trending">Trending</button>
+          <button class="ftab" data-filter="gainers">Gainers</button>
+          <button class="ftab" data-filter="losers">Losers</button>
+          <button class="ftab" data-filter="volume">Volume</button>
+          <button class="ftab" data-filter="new">New</button>
+        </div>
+
+        <!-- COINS -->
+        <div class="coin-grid" id="coin-grid"></div>
+
+      </section>
+
+      <!-- NEWS -->
+      <section class="section" id="sec-news">
+
+        <div class="sec-head">
+          <h2 class="sec-title">Crypto News</h2>
+        </div>
+
+        <div class="news-grid" id="news-grid"></div>
+
+      </section>
+
+      <!-- AIRDROPS -->
+      <section class="section" id="sec-airdrops">
+
+        <div class="sec-head">
+          <h2 class="sec-title">Airdrops</h2>
+        </div>
+
+        <div class="content-cards" id="airdrops-content"></div>
+
+      </section>
+
+      <!-- ALPHA -->
+      <section class="section" id="sec-alpha">
+
+        <div class="sec-head">
+          <h2 class="sec-title">Alpha Calls</h2>
+        </div>
+
+        <div class="alpha-list" id="alpha-content"></div>
+
+      </section>
+
+      <!-- PARTNERS -->
+      <section class="section" id="sec-partners">
+
+        <div class="sec-head">
+          <h2 class="sec-title">Partners</h2>
+        </div>
+
+        <div class="partners-grid" id="partners-grid"></div>
+
+      </section>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        Coinhat DEX © 2026
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- DRAWER -->
+  <div class="drawer-overlay" id="drawer-overlay">
+
+    <div class="drawer-bg" id="drawer-bg"></div>
+
+    <aside class="drawer">
+
+      <div class="drawer-header">
+
+        <div class="drawer-brand">
+          <img src="/assets/logo.jpg" class="drawer-logo" alt="Coinhat" />
+
+          <div>
+            <div class="drawer-brand-name">Coinhat</div>
+            <small>Secure Solana DEX</small>
+          </div>
+        </div>
+
+        <button class="drawer-close" id="drawer-close">
+          ✕
+        </button>
+
+      </div>
+
+      <div class="drawer-nav">
+
+        <div class="d-item active" data-sec="home">
+          <div class="d-icon-wrap">🏠</div>
+          <div class="d-label">Home</div>
+          <div class="d-arr">›</div>
+        </div>
+
+        <div class="d-item" data-sec="news">
+          <div class="d-icon-wrap">📰</div>
+          <div class="d-label">News</div>
+          <div class="d-arr">›</div>
+        </div>
+
+        <div class="d-item" data-sec="airdrops">
+          <div class="d-icon-wrap">🎁</div>
+          <div class="d-label">Airdrops</div>
+          <div class="d-badge">HOT</div>
+        </div>
+
+        <div class="d-item" data-sec="alpha">
+          <div class="d-icon-wrap">⚡</div>
+          <div class="d-label">Alpha</div>
+          <div class="d-arr">›</div>
+        </div>
+
+        <div class="d-item" data-sec="partners">
+          <div class="d-icon-wrap">🤝</div>
+          <div class="d-label">Partners</div>
+          <div class="d-arr">›</div>
         </div>
 
       </div>
 
-      <div
-        style="
-        display:grid;
-        grid-template-columns:repeat(2,1fr);
-        gap:12px;
-        margin-top:20px"
-      >
+      <div class="drawer-footer">
 
-        <div class="cs-item">
-          <div class="cs-lbl">Price</div>
-          <div class="cs-val" id="m-price">—</div>
+        <div class="drawer-tagline">
+          <span class="powered-logo"></span>
+          Powered by Solana + Jupiter
         </div>
 
-        <div class="cs-item">
-          <div class="cs-lbl">24h</div>
-          <div class="cs-val" id="m-chg">—</div>
-        </div>
-
-        <div class="cs-item">
-          <div class="cs-lbl">Market Cap</div>
-          <div class="cs-val" id="m-mcap">—</div>
-        </div>
-
-        <div class="cs-item">
-          <div class="cs-lbl">Volume</div>
-          <div class="cs-val" id="m-vol">—</div>
-        </div>
-
-        <div class="cs-item">
-          <div class="cs-lbl">Liquidity</div>
-          <div class="cs-val" id="m-liq">—</div>
-        </div>
-
-        <div class="cs-item">
-          <div class="cs-lbl">Contract</div>
-          <div class="cs-val" id="m-contract">—</div>
+        <div class="drawer-socials">
+          <a class="soc" href="#">𝕏</a>
+          <a class="soc" href="#">T</a>
+          <a class="soc" href="#">🌐</a>
         </div>
 
       </div>
 
-      <div
-        id="m-links"
-        style="
-        display:flex;
-        gap:10px;
-        flex-wrap:wrap;
-        margin-top:18px"
-      ></div>
+    </aside>
 
-      <iframe id="m-chart"></iframe>
+  </div>
 
-      <button
-        id="modal-swap-btn"
-        style="
-        margin-top:20px;
-        width:100%;
-        height:52px;
-        border:none;
-        border-radius:14px;
-        background:#1a6bff;
-        color:#fff;
-        font-size:16px;
-        font-weight:700;
-        cursor:pointer"
-      >
-        Open Swap
-      </button>
+  <!-- TOKEN MODAL -->
+  <div class="token-modal" id="token-modal">
+
+    <div class="modal-bg" id="modal-bg"></div>
+
+    <div class="modal-sheet">
+
+      <div class="modal-pull"></div>
+
+      <div class="modal-head">
+
+        <div class="modal-tok-row">
+
+          <img id="m-logo" class="modal-logo" alt="" />
+
+          <div id="m-logo-fb" class="modal-logo-fb">?</div>
+
+          <div>
+            <div class="modal-tname" id="m-name">Token</div>
+
+            <div class="modal-tsym">
+              <span id="m-sym">TKN</span>
+              <span class="sol-badge">SOL</span>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="modal-x" id="modal-close">
+          ✕
+        </button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <div class="m-stats">
+
+          <div class="m-stat">
+            <span class="m-slbl">Price</span>
+            <div class="m-sval" id="m-price">—</div>
+          </div>
+
+          <div class="m-stat">
+            <span class="m-slbl">24h</span>
+            <div class="m-sval" id="m-chg">—</div>
+          </div>
+
+          <div class="m-stat">
+            <span class="m-slbl">Liquidity</span>
+            <div class="m-sval" id="m-liq">—</div>
+          </div>
+
+        </div>
+
+        <div class="m-stats">
+
+          <div class="m-stat">
+            <span class="m-slbl">Market Cap</span>
+            <div class="m-sval" id="m-mcap">—</div>
+          </div>
+
+          <div class="m-stat">
+            <span class="m-slbl">Volume</span>
+            <div class="m-sval" id="m-vol">—</div>
+          </div>
+
+        </div>
+
+        <!-- CHART -->
+        <div class="m-chart-wrap">
+
+          <div class="m-chart-label">
+            📈 DexScreener Chart
+          </div>
+
+          <iframe id="m-chart" class="m-chart"></iframe>
+
+        </div>
+
+        <!-- CONTRACT -->
+        <div class="m-contract">
+          <div class="m-clbl">Contract</div>
+          <div class="m-caddr" id="m-contract"></div>
+          <button class="copy-btn" id="copy-btn">Copy</button>
+        </div>
+
+        <!-- LINKS -->
+        <div class="m-links" id="m-links"></div>
+
+        <!-- SWAP -->
+        <button class="swap-btn" id="modal-swap-btn">
+          Swap on Jupiter
+        </button>
+
+      </div>
 
     </div>
 
   </div>
 
-</div>
+  <!-- SWAP MODAL -->
+  <div class="swap-modal" id="swap-modal">
 
-<!-- SWAP MODAL -->
-<div id="swap-modal" class="modal">
+    <div class="modal-bg" id="swap-bg"></div>
 
-  <div id="swap-bg" class="modal-bg"></div>
+    <div class="swap-sheet">
 
-  <div class="modal-box">
+      <div class="swap-head">
 
-    <div class="modal-head">
+        <div class="swap-title">
+          🪐 Jupiter Swap
+        </div>
 
-      <h3>Swap</h3>
+        <button class="modal-x" id="swap-close">
+          ✕
+        </button>
 
-      <button id="swap-close" class="close-btn">
-        ✕
-      </button>
+      </div>
+
+      <div class="swap-body">
+        <iframe id="jupiter-iframe"></iframe>
+      </div>
 
     </div>
 
-    <iframe id="jupiter-iframe"></iframe>
-
   </div>
 
-</div>
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
 
-<!-- JS -->
-<script src="app.js"></script>
+    <div class="nav-item active" data-sec="home">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Home</div>
+    </div>
+
+    <div class="nav-item" data-sec="news">
+      <div class="nav-icon">📰</div>
+      <div class="nav-label">News</div>
+    </div>
+
+    <div class="nav-item center-btn" id="nav-swap-btn">
+      <div class="nav-icon">⇄</div>
+      <div class="nav-label">Swap</div>
+    </div>
+
+    <div class="nav-item" data-sec="airdrops">
+      <div class="nav-icon">🎁</div>
+      <div class="nav-label">Airdrops</div>
+    </div>
+
+    <div class="nav-item" data-sec="partners">
+      <div class="nav-icon">🤝</div>
+      <div class="nav-label">Partners</div>
+    </div>
+
+  </nav>
+
+  <script src="/app.js"></script>
 
 </body>
   </html>
