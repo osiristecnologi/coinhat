@@ -11,7 +11,8 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.set('trust proxy', 1); // Render usa 1 proxy
+  const PORT = process.env.PORT || 3000;
 
 // ── Security ──
 app.use(helmet({ crossOriginEmbedderPolicy: false }));
