@@ -48,12 +48,22 @@ const proxyFetch = async (url, timeout = 8000) => {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
   try {
-    const res = await fetch(url, { signal: controller.signal, headers: { 'User-Agent': 'CoinhatDEX/1.0' } });
+    const res = await fetch(url, { 
+      signal: controller.signal,
+      headers: { 
+        'User-Agent': 'Mozilla/5.0 Coinhat/1.0',
+        'Accept': 'application/json'
+      } 
+    });
     clearTimeout(timer);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      console.error('DexScreener HTTP:', res.status, await res.text());
+      throw new Error(`HTTP ${res.status}`);
+    }
     return await res.json();
   } catch (e) {
     clearTimeout(timer);
+    console.error('proxyFetch error:', url, e.message);
     throw e;
   }
 };
