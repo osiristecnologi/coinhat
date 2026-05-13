@@ -1,8 +1,6 @@
 // ═══════════════════════════════════════════
 //  COINHAT DEX — API Only
 // ═══════════════════════════════════════════
-require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
-
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -11,8 +9,8 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-app.set('trust proxy', 1); // Render usa 1 proxy
-  const PORT = process.env.PORT || 3000;
+app.set('trust proxy', 1);
+const PORT = process.env.PORT || 3000;
 
 // ── Security ──
 app.use(helmet({ crossOriginEmbedderPolicy: false }));
@@ -26,14 +24,14 @@ app.use('/api/', rateLimit({
   message: { error: 'Too many requests' }
 }));
 
-// ── Env ──
-const REFERRAL = process.env.REFERRAL_ID;
+// ── Env com Fallback ──
+const REFERRAL = process.env.REFERRAL_ID || 'coinhat';
 const FEE_BPS = process.env.JUPITER_FEE_BPS || '50';
-const SOL_MINT = process.env.SOL_MINT;
-const USDC_MINT = process.env.USDC_MINT;
-const DEX_BASE = process.env.DEXSCREENER_BASE;
-const BIN_BASE = process.env.BINANCE_BASE;
-const JUP_BASE = process.env.JUPITER_BASE;
+const SOL_MINT = process.env.SOL_MINT || 'So11111111111111112';
+const USDC_MINT = process.env.USDC_MINT || 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+const DEX_BASE = process.env.DEXSCREENER_BASE || 'https://api.dexscreener.com';
+const BIN_BASE = process.env.BINANCE_BASE || 'https://api.binance.com';
+const JUP_BASE = process.env.JUPITER_BASE || 'https://jup.ag';
 
 // ── Helpers ──
 const loadJSON = (name) => {
@@ -57,7 +55,7 @@ const proxyFetch = async (url, timeout = 8000) => {
     });
     clearTimeout(timer);
     if (!res.ok) {
-      console.error('DexScreener HTTP:', res.status, await res.text());
+      console.error('HTTP Error:', res.status, url);
       throw new Error(`HTTP ${res.status}`);
     }
     return await res.json();
@@ -211,11 +209,7 @@ app.get('/api/parceiros', (req, res) => {
 });
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', ts: Date.now() }));
-
-// ── Root só pra teste ──
 app.get('/', (req, res) => res.json({ status: 'Coinhat API Online', docs: '/api/health' }));
-
-// ── 404 handler pra qualquer outra rota ──
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
 app.listen(PORT, () => console.log(`Coinhat API running on ${PORT}`));
