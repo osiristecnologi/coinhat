@@ -2,10 +2,10 @@
   "name": "coinhat-dex",
   "version": "1.0.0",
   "description": "Coinhat DEX — Secure Solana memecoin aggregator",
-  "main": "backend/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "node backend/server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "engines": {
     "node": ">=18"
