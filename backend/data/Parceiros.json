@@ -1,1 +1,9 @@
+[
+  {"icon":"🪐","name":"Jupiter","desc":"Melhor agregador DEX na Solana. Swap com os melhores preços.","tag":"DEX Aggregator","slug":"jupiter"},
+  {"icon":"📡","name":"DexScreener","desc":"Rastreamento em tempo real de pares em todas as chains.","tag":"Analytics","url":"https://dexscreener.com"},
+  {"icon":"👻","name":"Phantom","desc":"Carteira não-custodial líder no ecossistema Solana.","tag":"Wallet","url":"https://phantom.app"},
+  {"icon":"⚡","name":"Helius","desc":"Infraestrutura RPC de alta performance para Solana.","tag":"Infrastructure","url":"https://helius.dev"},
+  {"icon":"🦅","name":"Raydium","desc":"AMM nativa da Solana com pools de liquidez profunda.","tag":"AMM / DEX","url":"https://raydium.io"},
+  {"icon":"🌊","name":"Orca","desc":"Swap intuitivo com Whirlpools de liquidez concentrada.","tag":"DEX","url":"https://orca.so"}
+]
 
