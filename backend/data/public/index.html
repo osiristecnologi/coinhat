@@ -1,67 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <title>Coinhat DEX</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coinhat DEX - Top Solana</title>
   <style>
-    body { font-family: system-ui; background: #0a0a0a; color: #fff; padding: 20px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-    .card { 
-      background: #1a1a1a; border: 1px solid #333; border-radius: 12px; 
-      padding: 16px; display: flex; gap: 12px; align-items: center;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui; 
+      background: #0a0a0a; color: #fff; padding: 16px; 
     }
-    .card img { width: 48px; height: 48px; border-radius: 50%; }
-    .card h3 { margin: 0; font-size: 16px; }
-    .card p { margin: 4px 0 0; color: #888; font-size: 14px; }
-    .price { margin-left: auto; text-align: right; }
-    .price .usd { font-weight: bold; font-size: 18px; }
+    h1 { margin-bottom: 20px; font-size: 24px; }
+    .grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+      gap: 12px; 
+    }
+    .card { 
+      background: #151515; border: 1px solid #2a2a2a; border-radius: 16px; 
+      padding: 16px; display: flex; gap: 12px; align-items: center;
+      cursor: pointer; transition: all .2s;
+    }
+    .card:hover { background: #1f1f1f; border-color: #444; transform: translateY(-2px); }
+    .card img { width: 44px; height: 44px; border-radius: 50%; background: #222; }
+    .info { flex: 1; min-width: 0; }
+    .info h3 { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .info p { color: #888; font-size: 13px; margin-top: 2px; }
+    .price { text-align: right; }
+    .price .usd { font-weight: 600; font-size: 16px; }
+    .price .change { font-size: 13px; font-weight: 500; }
     .green { color: #16c784; } .red { color: #ea3943; }
-    .loading { text-align: center; padding: 40px; color: #666; }
+    .loading, .error { 
+      grid-column: 1/-1; text-align: center; padding: 60px 20px; 
+      color: #666; font-size: 14px;
+    }
+    .actions { display: flex; gap: 8px; margin-top: 8px; }
+    .btn { 
+      font-size: 12px; padding: 6px 10px; border-radius: 8px; 
+      background: #2a2a2a; color: #aaa; text-decoration: none;
+      border: 1px solid #333;
+    }
+    .btn:hover { background: #333; color: #fff; }
   </style>
 </head>
 <body>
-  <h1>Top Solana Memecoins</h1>
+  <h1>🔥 Trending Solana</h1>
   <div id="tokens" class="grid">
-    <div class="loading">Carregando tokens...</div>
+    <div class="loading">Buscando tokens na blockchain...</div>
   </div>
 
 <script>
-fetch('https://coinhat.onrender.com/api/coins')
-  .then(r => r.json())
-  .then(({ coins }) => {
-    const container = document.getElementById('tokens');
+const API = 'https://coinhat.onrender.com';
+
+async function loadTokens() {
+  const container = document.getElementById('tokens');
+  try {
+    const res = await fetch(`${API}/api/coins`);
+    const { coins } = await res.json();
     
-    if (!coins.length) {
-      container.innerHTML = '<div class="loading">Nenhum token encontrado</div>';
+    if (!coins?.length) {
+      container.innerHTML = '<div class="error">Nenhum token encontrado. Volta em 1 min.</div>';
       return;
     }
 
     container.innerHTML = coins.map(t => {
       const change = parseFloat(t.change24h || 0);
       const changeClass = change >= 0 ? 'green' : 'red';
-      const price = parseFloat(t.priceUsd || 0).toLocaleString('en-US', {
-        style: 'currency', currency: 'USD', minimumFractionDigits: 6
-      });
+      const price = parseFloat(t.priceUsd || 0);
+      const priceFmt = price < 0.01 ? price.toFixed(8) : price.toFixed(6);
       
       return `
-        <div class="card">
-          <img src="${t.imageUrl || 'https://via.placeholder.com/48'}" onerror="this.src='https://via.placeholder.com/48'">
-          <div>
+        <div class="card" onclick="openChart('${t.pairAddress}')">
+          <img src="${t.imageUrl || ''}" onerror="this.style.display='none'">
+          <div class="info">
             <h3>${t.name}</h3>
-            <p>${t.symbol}</p>
+            <p>${t.symbol} • MC: $${(t.marketCap/1e6).toFixed(1)}M</p>
+            <div class="actions">
+              <a href="#" class="btn" onclick="openSwap('${t.address}');event.stopPropagation()">Swap</a>
+              <a href="https://dexscreener.com/solana/${t.pairAddress}" target="_blank" class="btn" onclick="event.stopPropagation()">Chart</a>
+            </div>
           </div>
           <div class="price">
-            <div class="usd">${price}</div>
-            <div class="${changeClass}">${change.toFixed(2)}%</div>
+            <div class="usd">$${priceFmt}</div>
+            <div class="change ${changeClass}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div>
           </div>
         </div>
       `;
     }).join('');
-  })
-  .catch(err => {
-    document.getElementById('tokens').innerHTML = 
-      '<div class="loading">Erro ao carregar. Tenta de novo.</div>';
+
+  } catch (err) {
+    container.innerHTML = '<div class="error">API offline. Render tá dormindo? 😴</div>';
     console.error(err);
-  });
+  }
+}
+
+function openChart(pairAddress) {
+  window.open(`https://dexscreener.com/solana/${pairAddress}`, '_blank');
+}
+
+function openSwap(tokenAddress) {
+  window.open(`https://jup.ag/swap/SOL-${tokenAddress}`, '_blank');
+}
+
+loadTokens();
+setInterval(loadTokens, 60000); // Atualiza a cada 1 min
 </script>
 </body>
 </html>
