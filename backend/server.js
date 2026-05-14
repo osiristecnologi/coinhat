@@ -199,6 +199,19 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// — SWAP COM TAXA DE 1% —
+app.post('/api/swap', (req, res) => {
+  const { outputMint, amount = 0.1 } = req.body;
+  
+  if (!outputMint) {
+    return res.status(400).json({ error: 'outputMint required' });
+  }
+
+  const url = `https://jup.ag/swap/SOL-${outputMint}?amount=${amount}&platformFeeBps=100&feeAccount=9GXNpv77DFnCAa4z4GgYFuAhBvZp3vrsG5JBoS5vZg4k`;
+  
+  res.json({ url });
+});   
+
 // ── COINS ─────────────────────────────────────────────
 app.get('/api/coins', async (req, res) => {
 
