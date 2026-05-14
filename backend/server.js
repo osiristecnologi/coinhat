@@ -198,6 +198,18 @@ app.get('/api/health', (req, res) => {
     ts: Date.now()
   });
 });
+// ANÚNCIO PAGO PUNCK 👇
+coins.unshift({
+  address: "NV2RYH954cTJ3ckFUpvfqaQXU4ARqqDH3562nFSpump",
+  name: "PUNCK",
+  symbol: "PUNCK",
+  logoURI: "https://ipfs.io/ipfs/Qm...", // PEGA A LOGO COM O DONO
+  decimals: 6,
+  price: 0.00001234, // chuta um preço ou pega da API
+  volume24h: 500000,
+  promoted: true,
+  badge: "PROMOTED"
+});
 
 // — SWAP COM TAXA DE 1% —
 app.post('/api/swap', (req, res) => {
